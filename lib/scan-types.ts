@@ -1,6 +1,6 @@
 export type ScanMode = 'passive' | 'active' | 'full'
 export type ScanStatus = 'idle' | 'running' | 'paused' | 'completed' | 'failed'
-export type Severity = 'critical' | 'high' | 'medium' | 'low' | 'info'
+export type Severity = 'CRITICAL' | 'HIGH' | 'MEDIUM' | 'LOW' | 'INFO'
 
 export interface PhaseResult {
   id: number
@@ -13,23 +13,40 @@ export interface PhaseResult {
   logs: LogEntry[]
 }
 
+export interface CVSSData {
+  vector: string // "CVSS:3.1/AV:N/AC:L/..."
+  baseScore: number
+  baseSeverity: string
+  exploitability: number
+  impactScore: number
+}
+
 export interface Finding {
   id: string
   severity: Severity
   title: string
   url?: string
   description: string
+  detectionMethod: string // Why it was identified this way
   phase: string
   timestamp: string
   tags: string[]
-  cve?: string
-  remediation?: string
+  cwe: string[] // e.g., ['CWE-89'] for SQL Injection
+  owasp: string[] // e.g., ['A03:2021']
+  cvss?: CVSSData // CVSS v3.1 vector and score
+  cveId?: string // Real CVE ID if applicable
+  affectedComponent?: string // Framework/library version
+  remediationSteps: string[] // Detailed remediation
+  references: string[] // Links to resources
+  evidence?: string // Raw evidence from scanning
+  toolsUsed: string[] // Tools that detected it (e.g., 'nuclei', 'burp', 'sqlmap')
 }
 
 export interface LogEntry {
   ts: string
-  level: 'info' | 'success' | 'warn' | 'error'
+  level: 'info' | 'success' | 'warn' | 'error' | 'debug'
   msg: string
+  tool?: string // Which tool generated this log
 }
 
 export interface ScanConfig {
@@ -55,25 +72,47 @@ export interface ScanSession {
 }
 
 export interface ScanSummary {
+  // Asset Enumeration
   subdomainsPassive: number
   subdomainsResolved: number
   liveUrls: number
   uniqueEndpoints: number
   jsFiles: number
+  
+  // Parameter & Fuzzing Discovery
   crawlParams: number
+  discoveredEndpoints: number
+  
+  // Cloud & Infrastructure
   openBuckets: number
   danglingCnames: number
-  nucleiTotal: number
-  nucleiCritical: number
-  nucleiHigh: number
-  nucleiMedium: number
+  cloudAssets: number
+  
+  // Vulnerability Counts by Severity
+  criticalFindings: number
+  highFindings: number
+  mediumFindings: number
+  lowFindings: number
+  infoFindings: number
+  
+  // Specific Vulnerability Types
+  sqlInjectionFound: number
+  xssFound: number
   corsIssues: number
-  oidcEndpoints: number
-  jwtsFound: number
-  missingHeaders: number
-  secretsFound: number
-  graphqlOpen: number
+  jwtFlaws: number
+  authBypassChains: number
   subdoTakeovers: number
+  missingSecurityHeaders: number
+  weakCrypto: number
+  
+  // Technology Stack
+  technologies: string[] // Frameworks, CMSs, etc.
+  outdatedComponents: string[] // Known vulnerable versions
+  
+  // Risk Metrics
+  riskScore: number // 0-100
+  exploitableRisks: number
+  affectedAssetCount: number
 }
 
 export const PHASE_DEFINITIONS = [
@@ -95,17 +134,17 @@ export const PHASE_DEFINITIONS = [
 ] as const
 
 export const SEVERITY_COLORS: Record<Severity, string> = {
-  critical: '#ff3b5c',
-  high:     '#ff6b35',
-  medium:   '#f7b731',
-  low:      '#45d48a',
-  info:     '#4ecdc4',
+  CRITICAL: '#ff3b5c',
+  HIGH:     '#ff6b35',
+  MEDIUM:   '#f7b731',
+  LOW:      '#45d48a',
+  INFO:     '#4ecdc4',
 }
 
 export const SEVERITY_BG: Record<Severity, string> = {
-  critical: 'bg-[#ff3b5c]/10 text-[#ff3b5c] border-[#ff3b5c]/20',
-  high:     'bg-[#ff6b35]/10 text-[#ff6b35] border-[#ff6b35]/20',
-  medium:   'bg-[#f7b731]/10 text-[#f7b731] border-[#f7b731]/20',
-  low:      'bg-[#45d48a]/10 text-[#45d48a] border-[#45d48a]/20',
-  info:     'bg-[#4ecdc4]/10 text-[#4ecdc4] border-[#4ecdc4]/20',
+  CRITICAL: 'bg-[#ff3b5c]/10 text-[#ff3b5c] border-[#ff3b5c]/20',
+  HIGH:     'bg-[#ff6b35]/10 text-[#ff6b35] border-[#ff6b35]/20',
+  MEDIUM:   'bg-[#f7b731]/10 text-[#f7b731] border-[#f7b731]/20',
+  LOW:      'bg-[#45d48a]/10 text-[#45d48a] border-[#45d48a]/20',
+  INFO:     'bg-[#4ecdc4]/10 text-[#4ecdc4] border-[#4ecdc4]/20',
 }

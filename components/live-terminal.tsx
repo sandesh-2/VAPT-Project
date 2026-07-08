@@ -11,11 +11,12 @@ interface LiveTerminalProps {
   maxHeight?: string
 }
 
-const LOG_STYLES = {
+const LOG_STYLES: Record<string, { prefix: string; color: string }> = {
   info:    { prefix: '[*]', color: 'text-[#4ecdc4]' },
   success: { prefix: '[+]', color: 'text-[#45d48a]' },
   warn:    { prefix: '[!]', color: 'text-[#f7b731]' },
   error:   { prefix: '[-]', color: 'text-[#ff3b5c]' },
+  debug:   { prefix: '[d]', color: 'text-[#64748b]' },
 }
 
 export function LiveTerminal({ logs, title = 'Live Output', maxHeight = '260px' }: LiveTerminalProps) {

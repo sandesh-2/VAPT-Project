@@ -43,6 +43,46 @@ export function PassiveReconView({ session }: PassiveReconViewProps) {
   const passiveFindings = [...(phase1?.findings ?? []), ...(phase2?.findings ?? [])]
   const passiveLogs = [...(phase1?.logs ?? []), ...(phase2?.logs ?? [])]
 
+  if (!session) {
+    return (
+      <div className="space-y-5">
+        <div className="bg-[#0f1117] border border-[#1e2535] rounded-xl p-10 text-center">
+          <Radio className="w-12 h-12 text-[#1e2535] mx-auto mb-4" />
+          <p className="text-lg font-semibold text-white mb-2">Passive Reconnaissance</p>
+          <p className="text-sm text-[#64748b]">
+            OSINT sources, DNS enumeration, and passive data collection — no active traffic generated
+          </p>
+          <p className="text-xs text-[#334155] mt-3">Start a scan to begin passive recon</p>
+        </div>
+
+        {/* Source grid - informational */}
+        <div className="bg-[#0f1117] border border-[#1e2535] rounded-xl overflow-hidden">
+          <div className="flex items-center justify-between px-5 py-3.5 border-b border-[#1e2535]">
+            <div className="flex items-center gap-2">
+              <Radio className="w-4 h-4 text-[#4ecdc4]" />
+              <span className="text-sm font-semibold text-white">Passive OSINT Sources</span>
+              <span className="text-[10px] font-mono text-[#64748b] bg-[#1c1f2e] px-2 py-0.5 rounded">Phase 1 — Zero active traffic</span>
+            </div>
+          </div>
+          <div className="p-4 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
+            {SOURCES.map(src => {
+              const Icon = src.icon
+              return (
+                <div key={src.label} className="bg-[#0a0b0f] border border-[#1e2535] rounded-lg p-4 hover:border-[#2a3347] transition-colors opacity-50">
+                  <div className={cn("w-8 h-8 rounded-lg flex items-center justify-center mb-3", src.bg)}>
+                    <Icon className={cn("w-4 h-4", src.color)} strokeWidth={1.5} />
+                  </div>
+                  <p className="text-sm font-semibold text-white mb-1">{src.label}</p>
+                  <p className="text-[10px] text-[#64748b] leading-relaxed">{src.desc}</p>
+                </div>
+              )
+            })}
+          </div>
+        </div>
+      </div>
+    )
+  }
+
   return (
     <div className="space-y-5">
       {/* Source grid */}

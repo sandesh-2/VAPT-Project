@@ -16,6 +16,26 @@ interface ScanLauncherProps {
 
 const RATE_OPTIONS = [1, 2, 3, 5, 10, 20]
 
+// Input validators
+const validators = {
+  domain: (v: string): boolean => {
+    if (!v || v.length === 0) return false
+    if (v.length > 253) return false
+    // Basic domain validation: alphanumeric, dots, hyphens only
+    return /^[a-z0-9]([a-z0-9-]{0,61}[a-z0-9])?(\.[a-z0-9]([a-z0-9-]{0,61}[a-z0-9])?)*$/i.test(v)
+  },
+  url: (v: string): boolean => {
+    if (!v || v.length === 0) return false
+    try {
+      const url = new URL(v)
+      return url.protocol === 'http:' || url.protocol === 'https:'
+    } catch {
+      return false
+    }
+  },
+  researcher: (v: string): boolean => Boolean(v) && v.length > 0 && v.length <= 100,
+}
+
 export function ScanLauncher({ config, onConfigChange, status, onStart, onStop, onPause }: ScanLauncherProps) {
   const [advanced, setAdvanced] = useState(false)
   const isRunning = status === 'running'
@@ -23,6 +43,8 @@ export function ScanLauncher({ config, onConfigChange, status, onStart, onStop, 
   const isActive  = isRunning || isPaused
 
   const set = (patch: Partial<ScanConfig>) => onConfigChange({ ...config, ...patch })
+  
+  const isValidForScan = validators.domain(config.target) && validators.url(config.scopeUrl) && validators.researcher(config.researcher)
 
   return (
     <div className="bg-[#0f1117] border border-[#1e2535] rounded-xl overflow-hidden">
@@ -184,13 +206,14 @@ export function ScanLauncher({ config, onConfigChange, status, onStart, onStop, 
         {!isActive ? (
           <button
             onClick={onStart}
-            disabled={!config.target}
+            disabled={!isValidForScan}
             className={cn(
               "flex items-center gap-2 px-5 py-2.5 rounded-lg text-sm font-semibold transition-all",
-              config.target
+              isValidForScan
                 ? "bg-[#00d4aa] text-[#0a0b0f] hover:bg-[#00a884] shadow-[0_0_20px_rgba(0,212,170,0.2)]"
                 : "bg-[#1c1f2e] text-[#334155] cursor-not-allowed"
             )}
+            title={!isValidForScan ? "Enter valid domain, scope URL, and researcher name" : "Start security scan"}
           >
             <Play className="w-4 h-4" />
             Launch Scan

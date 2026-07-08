@@ -1,6 +1,6 @@
 'use client'
 
-import { Shield, LayoutDashboard, Bug, Globe, Cpu, FileText, Settings, ChevronRight, Zap, Activity } from 'lucide-react'
+import { Shield, LayoutDashboard, Bug, Globe, Cpu, FileText, Settings, ChevronRight, Zap, Activity, Calculator } from 'lucide-react'
 import { cn } from '@/lib/utils'
 
 interface SidebarProps {
@@ -11,13 +11,14 @@ interface SidebarProps {
 }
 
 const navItems = [
-  { id: 'dashboard',  label: 'Dashboard',     icon: LayoutDashboard },
-  { id: 'scanner',    label: 'Scan Engine',    icon: Zap },
-  { id: 'passive',    label: 'Passive Recon',  icon: Globe },
-  { id: 'active',     label: 'Active Scan',    icon: Activity },
-  { id: 'vulns',      label: 'Vulnerabilities',icon: Bug },
-  { id: 'report',     label: 'Reports',        icon: FileText },
-  { id: 'settings',   label: 'Settings',       icon: Settings },
+  { id: 'dashboard',   label: 'Dashboard',      icon: LayoutDashboard },
+  { id: 'scanner',     label: 'Scan Engine',     icon: Zap },
+  { id: 'passive',     label: 'Passive Recon',   icon: Globe },
+  { id: 'active',      label: 'Active Scan',     icon: Activity },
+  { id: 'vulns',       label: 'Vulnerabilities', icon: Bug },
+  { id: 'calculator',  label: 'Calculators',     icon: Calculator },
+  { id: 'report',      label: 'Reports',         icon: FileText },
+  { id: 'settings',    label: 'Settings',        icon: Settings },
 ]
 
 export function Sidebar({ activeTab, onTabChange, isScanning, scanProgress }: SidebarProps) {

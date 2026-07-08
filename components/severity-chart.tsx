@@ -7,7 +7,7 @@ interface SeverityChartProps {
   findings: Finding[]
 }
 
-const SEVERITY_ORDER: Severity[] = ['critical', 'high', 'medium', 'low', 'info']
+const SEVERITY_ORDER: Severity[] = ['CRITICAL', 'HIGH', 'MEDIUM', 'LOW', 'INFO']
 
 const CustomTooltip = ({ active, payload }: any) => {
   if (active && payload?.length) {
@@ -34,7 +34,7 @@ export function SeverityChart({ findings }: SeverityChartProps) {
   const phaseData = Array.from(
     findings.reduce((map, f) => {
       const key = f.phase
-      if (!map.has(key)) map.set(key, { phase: key, critical: 0, high: 0, medium: 0, low: 0, info: 0 })
+      if (!map.has(key)) map.set(key, { phase: key, CRITICAL: 0, HIGH: 0, MEDIUM: 0, LOW: 0, INFO: 0 })
       map.get(key)![f.severity]++
       return map
     }, new Map<string, any>()).values()
@@ -92,9 +92,9 @@ export function SeverityChart({ findings }: SeverityChartProps) {
             />
             <YAxis tick={{ fontSize: 9, fill: '#64748b' }} axisLine={false} tickLine={false} />
             <Tooltip content={<CustomTooltip />} cursor={{ fill: 'rgba(255,255,255,0.03)' }} />
-            <Bar dataKey="critical" fill={SEVERITY_COLORS.critical} radius={[2,2,0,0]} />
-            <Bar dataKey="high"     fill={SEVERITY_COLORS.high}     radius={[2,2,0,0]} />
-            <Bar dataKey="medium"   fill={SEVERITY_COLORS.medium}   radius={[2,2,0,0]} />
+            <Bar dataKey="CRITICAL" fill={SEVERITY_COLORS.CRITICAL} radius={[2,2,0,0]} />
+            <Bar dataKey="HIGH"     fill={SEVERITY_COLORS.HIGH}     radius={[2,2,0,0]} />
+            <Bar dataKey="MEDIUM"   fill={SEVERITY_COLORS.MEDIUM}   radius={[2,2,0,0]} />
           </BarChart>
         </ResponsiveContainer>
       </div>
