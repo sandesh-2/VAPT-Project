@@ -9,7 +9,7 @@ import { ActiveScanView } from '@/components/active-scan-view'
 import { ReportPanel } from '@/components/report-panel'
 import { FindingsList } from '@/components/findings-list'
 import { ReportExport } from '@/components/report-export'
-import { SettingsPanel } from '@/components/settings-panel'
+import { SettingsPanel, AppSettings } from '@/components/settings-panel'
 import { ScanConfig, ScanSession, ScanStatus, PHASE_DEFINITIONS } from '@/lib/scan-types'
 import { createScanSession, startScan, pauseScan, resumeScan, stopScan } from '@/lib/scan-engine'
 import { SecurityCalculator } from '@/components/security-calculator'
@@ -31,10 +31,23 @@ export default function Page() {
   const [session, setSession] = useState<ScanSession | null>(null)
   const [status, setStatus] = useState<ScanStatus>('idle')
   const [selectedPhase, setSelectedPhase] = useState<number | undefined>(undefined)
+  const [appSettings, setAppSettings] = useState<AppSettings | null>(null)
 
   const scanProgress = session
     ? Math.round((session.phases.filter(p => p.status === 'done').length / session.phases.length) * 100)
     : 0
+
+  const handleSettingsChange = useCallback((newSettings: AppSettings) => {
+    setAppSettings(newSettings)
+    // Update config defaults from settings
+    setConfig(prev => ({
+      ...prev,
+      researcher: newSettings.defaultResearcher,
+      rateLimit: newSettings.defaultRateLimit,
+      maxCrawlDepth: newSettings.defaultCrawlDepth,
+      crawlDuration: newSettings.defaultCrawlTimeout,
+    }))
+  }, [])
 
   const handleStart = useCallback(async () => {
     if (!config.target || !config.scopeUrl) return
@@ -141,7 +154,7 @@ export default function Page() {
         )
 
       case 'settings':
-        return <SettingsPanel />
+        return <SettingsPanel onSettingsChange={handleSettingsChange} />
 
       default:
         return null

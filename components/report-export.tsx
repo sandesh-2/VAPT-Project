@@ -70,14 +70,14 @@ export function ReportExport({ session }: ReportExportProps) {
   }
 
   return (
-    <div className="space-y-4">
+    <div className="bg-[#0f1117] border border-[#1e2535] rounded-xl p-6 space-y-4">
       <div>
-        <h3 className="font-semibold text-sm mb-3">Export Report</h3>
+        <h3 className="font-semibold text-sm mb-4 text-white">Export Report</h3>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
           <button
             onClick={() => handleExport('markdown')}
             disabled={downloading !== null}
-            className="flex items-center justify-center gap-2 px-4 py-2 rounded-lg bg-primary text-primary-foreground hover:bg-opacity-90 disabled:opacity-50 transition font-medium text-sm"
+            className="flex items-center justify-center gap-2 px-4 py-2.5 rounded-lg bg-[#7c3aed] text-white hover:bg-[#6d28d9] disabled:opacity-50 transition font-medium text-sm"
           >
             {downloading === 'markdown' ? (
               <>
@@ -87,7 +87,7 @@ export function ReportExport({ session }: ReportExportProps) {
             ) : (
               <>
                 <FileDown className="w-4 h-4" />
-                Download Markdown
+                Markdown
               </>
             )}
           </button>
@@ -95,7 +95,7 @@ export function ReportExport({ session }: ReportExportProps) {
           <button
             onClick={() => handleExport('json')}
             disabled={downloading !== null}
-            className="flex items-center justify-center gap-2 px-4 py-2 rounded-lg bg-muted text-foreground hover:bg-muted/80 disabled:opacity-50 transition font-medium text-sm"
+            className="flex items-center justify-center gap-2 px-4 py-2.5 rounded-lg bg-[#00d4aa]/20 text-[#00d4aa] border border-[#00d4aa]/40 hover:bg-[#00d4aa]/30 disabled:opacity-50 transition font-medium text-sm"
           >
             {downloading === 'json' ? (
               <>
@@ -105,7 +105,7 @@ export function ReportExport({ session }: ReportExportProps) {
             ) : (
               <>
                 <FileDown className="w-4 h-4" />
-                Download JSON
+                JSON
               </>
             )}
           </button>
@@ -113,7 +113,7 @@ export function ReportExport({ session }: ReportExportProps) {
           <button
             onClick={() => handleExport('csv')}
             disabled={downloading !== null}
-            className="flex items-center justify-center gap-2 px-4 py-2 rounded-lg bg-muted text-foreground hover:bg-muted/80 disabled:opacity-50 transition font-medium text-sm"
+            className="flex items-center justify-center gap-2 px-4 py-2.5 rounded-lg bg-[#f7b731]/20 text-[#f7b731] border border-[#f7b731]/40 hover:bg-[#f7b731]/30 disabled:opacity-50 transition font-medium text-sm"
           >
             {downloading === 'csv' ? (
               <>
@@ -123,7 +123,7 @@ export function ReportExport({ session }: ReportExportProps) {
             ) : (
               <>
                 <FileDown className="w-4 h-4" />
-                Download CSV
+                CSV
               </>
             )}
           </button>
@@ -131,7 +131,7 @@ export function ReportExport({ session }: ReportExportProps) {
           <button
             onClick={handleCopyMarkdown}
             disabled={downloading !== null}
-            className="flex items-center justify-center gap-2 px-4 py-2 rounded-lg bg-muted text-foreground hover:bg-muted/80 disabled:opacity-50 transition font-medium text-sm"
+            className="flex items-center justify-center gap-2 px-4 py-2.5 rounded-lg bg-[#1e2535] text-[#64748b] border border-[#2a3347] hover:border-[#3a4357] disabled:opacity-50 transition font-medium text-sm"
           >
             {copied ? (
               <>
@@ -141,17 +141,17 @@ export function ReportExport({ session }: ReportExportProps) {
             ) : (
               <>
                 <Copy className="w-4 h-4" />
-                Copy Markdown
+                Copy
               </>
             )}
           </button>
         </div>
       </div>
 
-      <div className="text-xs text-muted-foreground">
-        <p>• <strong>Markdown:</strong> Professional formatted report for email/documentation</p>
-        <p>• <strong>JSON:</strong> Machine-readable format for integration with other tools</p>
-        <p>• <strong>CSV:</strong> Spreadsheet format for findings management</p>
+      <div className="text-xs text-[#64748b] space-y-1 pt-4 border-t border-[#1e2535]">
+        <p><strong className="text-[#e2e8f0]">Markdown:</strong> Professional formatted report for email and documentation</p>
+        <p><strong className="text-[#e2e8f0]">JSON:</strong> Machine-readable format for integration with other tools</p>
+        <p><strong className="text-[#e2e8f0]">CSV:</strong> Spreadsheet format for findings management</p>
       </div>
     </div>
   )
