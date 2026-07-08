@@ -37,21 +37,29 @@ export default function Page() {
     : 0
 
   const handleStart = useCallback(async () => {
-    if (!config.target) return
+    if (!config.target || !config.scopeUrl) return
 
-    // Create new session
-    const newSession = await createScanSession(config)
-    setSession(newSession)
-    setStatus('running')
-    setActiveTab('dashboard')
+    try {
+      // Create new session
+      const newSession = await createScanSession(config)
+      if (!newSession) throw new Error('Failed to create scan session')
+      
+      setSession(newSession)
+      setStatus('running')
+      setActiveTab('dashboard')
 
-    // Start scanning with callback updates
-    startScan(newSession, (updated) => {
-      setSession(updated)
-      if (updated.status === 'completed') {
-        setStatus('completed')
-      }
-    })
+      // Start scanning with callback updates
+      startScan(newSession, (updated) => {
+        setSession(updated)
+        if (updated.status === 'completed') {
+          setStatus('completed')
+        }
+      })
+    } catch (error) {
+      console.error('[v0] Scan start error:', error)
+      setStatus('failed')
+      setSession(null)
+    }
   }, [config])
 
   const handlePause = useCallback(() => {

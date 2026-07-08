@@ -54,14 +54,14 @@ export function StatsCards({ summary, isScanning }: StatsCardsProps) {
             <div>
               <p className={cn(
                 "text-2xl font-bold font-mono leading-none",
-                card.value === 0
+                !card.value || card.value === 0
                   ? "text-[#334155]"
                   : card.highlight
                     ? card.color
                     : "text-white",
-                isScanning && card.value > 0 && "transition-all"
+                isScanning && card.value && card.value > 0 && "transition-all"
               )}>
-                {card.value.toLocaleString()}
+                {(card.value ?? 0).toLocaleString()}
               </p>
               <p className="text-[10px] text-[#64748b] mt-1 leading-tight">{card.label}</p>
             </div>

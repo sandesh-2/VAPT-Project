@@ -56,7 +56,7 @@ export function ReportPanel({ session }: ReportPanelProps) {
 **Scope URL**  : ${session.config.scopeUrl}
 **Researcher** : ${session.config.researcher}
 **Scan Mode**  : ${session.config.mode.toUpperCase()}
-**Date**       : ${new Date(session.startedAt).toLocaleString()}
+**Date**       : ${session.startedAt ? new Date(session.startedAt).toLocaleString() : 'Pending'}
 **Session ID** : ${session.id}
 
 ---
@@ -172,7 +172,7 @@ ${high.map(f => `- **${f.title}**: ${f.description}`).join('\n')}
             <MetaRow label="Researcher"  value={session.config.researcher} />
             <MetaRow label="Mode"        value={session.config.mode.toUpperCase()} />
             <MetaRow label="Rate Limit"  value={`${session.config.rateLimit} RPS`} />
-            <MetaRow label="Started"     value={new Date(session.startedAt).toLocaleString()} />
+            <MetaRow label="Started"     value={session.startedAt ? new Date(session.startedAt).toLocaleString() : 'Not started'} />
             <MetaRow label="Status"      value={session.status.toUpperCase()} />
             <MetaRow label="Session ID"  value={session.id.slice(0,18) + '...'} />
           </div>

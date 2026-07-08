@@ -336,6 +336,28 @@ function genPhaseFindings(phaseId: number): Finding[] {
 // ── Main Scanner ────────────────────────────────────────────────────────────
 
 export async function createScanSession(config: ScanConfig): Promise<ScanSession> {
+  // Validate required fields
+  if (!config.target || config.target.trim().length === 0) {
+    throw new Error('Target domain is required')
+  }
+  if (!config.scopeUrl || config.scopeUrl.trim().length === 0) {
+    throw new Error('Scope URL is required')
+  }
+  if (!config.researcher || config.researcher.trim().length === 0) {
+    config.researcher = 'VAPT-Platform'
+  }
+  
+  // Validate numeric fields
+  if (config.rateLimit < 1 || config.rateLimit > 100) {
+    config.rateLimit = Math.max(1, Math.min(100, config.rateLimit))
+  }
+  if (config.maxCrawlDepth < 1 || config.maxCrawlDepth > 10) {
+    config.maxCrawlDepth = Math.max(1, Math.min(10, config.maxCrawlDepth))
+  }
+  if (config.crawlDuration < 60 || config.crawlDuration > 3600) {
+    config.crawlDuration = Math.max(60, Math.min(3600, config.crawlDuration))
+  }
+  
   return {
     id: crypto.randomUUID(),
     config,

@@ -44,13 +44,24 @@ const METRICS = {
  */
 export function calculateCVSSBaseScore(vectorString: string): number {
   try {
+    // Validate input
+    if (!vectorString || typeof vectorString !== 'string') {
+      return 0;
+    }
+    if (vectorString.length > 200) {
+      throw new Error('CVSS vector string exceeds maximum length');
+    }
+    
     const parts = vectorString.split('/');
     const metrics: Record<string, string> = {};
 
-    // Parse vector string
+    // Parse vector string with validation
     parts.forEach((part) => {
+      if (!part || typeof part !== 'string') return;
       const [key, value] = part.split(':');
-      metrics[key] = value;
+      if (key && value && typeof key === 'string' && typeof value === 'string') {
+        metrics[key] = value;
+      }
     });
 
     // Extract metrics with defaults for required ones
