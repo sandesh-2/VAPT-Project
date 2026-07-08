@@ -24,14 +24,14 @@ export function StatsCards({ summary, isScanning }: StatsCardsProps) {
     { label: 'Live Subdomains',     value: summary.subdomainsResolved, icon: Link2,         color: 'text-[#4ecdc4]', bg: 'bg-[#4ecdc4]/10' },
     { label: 'Live URLs',           value: summary.liveUrls,           icon: Crosshair,     color: 'text-[#00d4aa]', bg: 'bg-[#00d4aa]/10' },
     { label: 'Unique Endpoints',    value: summary.uniqueEndpoints,    icon: Database,      color: 'text-[#00d4aa]', bg: 'bg-[#00d4aa]/10' },
-    { label: 'Critical Findings',   value: summary.nucleiCritical,     icon: AlertTriangle, color: 'text-[#ff3b5c]', bg: 'bg-[#ff3b5c]/10', highlight: summary.nucleiCritical > 0 },
-    { label: 'High Findings',       value: summary.nucleiHigh,         icon: Shield,        color: 'text-[#ff6b35]', bg: 'bg-[#ff6b35]/10', highlight: summary.nucleiHigh > 0 },
-    { label: 'Medium Findings',     value: summary.nucleiMedium,       icon: Bug,           color: 'text-[#f7b731]', bg: 'bg-[#f7b731]/10' },
+    { label: 'Critical Findings',   value: summary.criticalFindings,   icon: AlertTriangle, color: 'text-[#ff3b5c]', bg: 'bg-[#ff3b5c]/10', highlight: summary.criticalFindings > 0 },
+    { label: 'High Findings',       value: summary.highFindings,       icon: Shield,        color: 'text-[#ff6b35]', bg: 'bg-[#ff6b35]/10', highlight: summary.highFindings > 0 },
+    { label: 'Medium Findings',     value: summary.mediumFindings,     icon: Bug,           color: 'text-[#f7b731]', bg: 'bg-[#f7b731]/10' },
     { label: 'CORS Issues',         value: summary.corsIssues,         icon: Lock,          color: 'text-[#f7b731]', bg: 'bg-[#f7b731]/10', highlight: summary.corsIssues > 0 },
     { label: 'Open Buckets',        value: summary.openBuckets,        icon: Cloud,         color: 'text-[#ff3b5c]', bg: 'bg-[#ff3b5c]/10', highlight: summary.openBuckets > 0 },
     { label: 'Takeovers',           value: summary.subdoTakeovers,     icon: AlertTriangle, color: 'text-[#ff3b5c]', bg: 'bg-[#ff3b5c]/10', highlight: summary.subdoTakeovers > 0 },
-    { label: 'Secrets Found',       value: summary.secretsFound,       icon: Key,           color: 'text-[#ff6b35]', bg: 'bg-[#ff6b35]/10', highlight: summary.secretsFound > 0 },
-    { label: 'GraphQL Open',        value: summary.graphqlOpen,        icon: Code2,         color: 'text-[#f7b731]', bg: 'bg-[#f7b731]/10', highlight: summary.graphqlOpen > 0 },
+    { label: 'JWT Flaws',           value: summary.jwtFlaws,           icon: Key,           color: 'text-[#ff6b35]', bg: 'bg-[#ff6b35]/10', highlight: summary.jwtFlaws > 0 },
+    { label: 'Headers Missing',     value: summary.missingSecurityHeaders, icon: Code2,    color: 'text-[#f7b731]', bg: 'bg-[#f7b731]/10', highlight: summary.missingSecurityHeaders > 0 },
   ]
 
   return (

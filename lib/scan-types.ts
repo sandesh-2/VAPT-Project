@@ -1,6 +1,6 @@
 export type ScanMode = 'passive' | 'active' | 'full'
 export type ScanStatus = 'idle' | 'running' | 'paused' | 'completed' | 'failed'
-export type Severity = 'critical' | 'high' | 'medium' | 'low' | 'info'
+export type Severity = 'CRITICAL' | 'HIGH' | 'MEDIUM' | 'LOW' | 'INFO'
 
 export interface PhaseResult {
   id: number
@@ -13,23 +13,40 @@ export interface PhaseResult {
   logs: LogEntry[]
 }
 
+export interface CVSSData {
+  vector: string // "CVSS:3.1/AV:N/AC:L/..."
+  baseScore: number
+  baseSeverity: string
+  exploitability: number
+  impactScore: number
+}
+
 export interface Finding {
   id: string
   severity: Severity
   title: string
   url?: string
   description: string
+  detectionMethod: string // Why it was identified this way
   phase: string
   timestamp: string
   tags: string[]
-  cve?: string
-  remediation?: string
+  cwe: string[] // e.g., ['CWE-89'] for SQL Injection
+  owasp: string[] // e.g., ['A03:2021']
+  cvss?: CVSSData // CVSS v3.1 vector and score
+  cveId?: string // Real CVE ID if applicable
+  affectedComponent?: string // Framework/library version
+  remediationSteps: string[] // Detailed remediation
+  references: string[] // Links to resources
+  evidence?: string // Raw evidence from scanning
+  toolsUsed: string[] // Tools that detected it (e.g., 'nuclei', 'burp', 'sqlmap')
 }
 
 export interface LogEntry {
   ts: string
-  level: 'info' | 'success' | 'warn' | 'error'
+  level: 'info' | 'success' | 'warn' | 'error' | 'debug'
   msg: string
+  tool?: string // Which tool generated this log
 }
 
 export interface ScanConfig {
@@ -55,25 +72,47 @@ export interface ScanSession {
 }
 
 export interface ScanSummary {
+  // Asset Enumeration
   subdomainsPassive: number
   subdomainsResolved: number
   liveUrls: number
   uniqueEndpoints: number
   jsFiles: number
+  
+  // Parameter & Fuzzing Discovery
   crawlParams: number
+  discoveredEndpoints: number
+  
+  // Cloud & Infrastructure
   openBuckets: number
   danglingCnames: number
-  nucleiTotal: number
-  nucleiCritical: number
-  nucleiHigh: number
-  nucleiMedium: number
+  cloudAssets: number
+  
+  // Vulnerability Counts by Severity
+  criticalFindings: number
+  highFindings: number
+  mediumFindings: number
+  lowFindings: number
+  infoFindings: number
+  
+  // Specific Vulnerability Types
+  sqlInjectionFound: number
+  xssFound: number
   corsIssues: number
-  oidcEndpoints: number
-  jwtsFound: number
-  missingHeaders: number
-  secretsFound: number
-  graphqlOpen: number
+  jwtFlaws: number
+  authBypassChains: number
   subdoTakeovers: number
+  missingSecurityHeaders: number
+  weakCrypto: number
+  
+  // Technology Stack
+  technologies: string[] // Frameworks, CMSs, etc.
+  outdatedComponents: string[] // Known vulnerable versions
+  
+  // Risk Metrics
+  riskScore: number // 0-100
+  exploitableRisks: number
+  affectedAssetCount: number
 }
 
 export const PHASE_DEFINITIONS = [
