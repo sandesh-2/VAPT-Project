@@ -39,6 +39,54 @@ export function ActiveScanView({ session, onSelectPhase, selectedPhase }: Active
     ? session?.phases.find(p => p.id === selectedPhase)
     : null
 
+  if (!session) {
+    return (
+      <div className="space-y-5">
+        <div className="bg-[#0f1117] border border-[#1e2535] rounded-xl p-10 text-center">
+          <Activity className="w-12 h-12 text-[#1e2535] mx-auto mb-4" />
+          <p className="text-lg font-semibold text-white mb-2">Active Scanning</p>
+          <p className="text-sm text-[#64748b]">
+            Rate-limited active probes: HTTP detection, crawling, JS analysis, fuzzing, vulnerability scanning and more
+          </p>
+          <p className="text-xs text-[#334155] mt-3">Start a scan to begin active reconnaissance</p>
+        </div>
+
+        {/* Active tool grid - informational */}
+        <div className="bg-[#0f1117] border border-[#1e2535] rounded-xl overflow-hidden">
+          <div className="flex items-center gap-2 px-5 py-3.5 border-b border-[#1e2535]">
+            <Activity className="w-4 h-4 text-[#ff6b35]" />
+            <span className="text-sm font-semibold text-white">Active Scan Modules</span>
+            <span className="text-[10px] font-mono text-[#ff6b35]/80 bg-[#ff6b35]/10 px-2 py-0.5 rounded border border-[#ff6b35]/20">
+              Phases 3–13 — Rate-limited
+            </span>
+          </div>
+          <div className="p-4 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-3">
+            {ACTIVE_PHASES.map(phase => {
+              const Icon = phase.icon
+              return (
+                <button
+                  key={phase.id}
+                  onClick={() => onSelectPhase(phase.id)}
+                  className="bg-[#0a0b0f] border border-[#1e2535] rounded-lg p-3.5 text-left hover:border-[#2a3347] transition-all opacity-50 cursor-not-allowed"
+                  disabled
+                >
+                  <div className="flex items-start justify-between mb-2">
+                    <div className="w-7 h-7 rounded flex items-center justify-center bg-[#161821]">
+                      <Icon className="w-3.5 h-3.5 text-[#334155]" />
+                    </div>
+                    <span className="text-[9px] font-mono text-[#334155]">{String(phase.id).padStart(2, '0')}</span>
+                  </div>
+                  <p className="text-xs font-semibold text-white mb-1">{phase.label}</p>
+                  <p className="text-[9px] text-[#64748b] leading-relaxed">{phase.desc}</p>
+                </button>
+              )
+            })}
+          </div>
+        </div>
+      </div>
+    )
+  }
+
   return (
     <div className="space-y-5">
       {/* Active tool grid */}

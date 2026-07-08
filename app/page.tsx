@@ -9,6 +9,7 @@ import { ActiveScanView } from '@/components/active-scan-view'
 import { ReportPanel } from '@/components/report-panel'
 import { FindingsList } from '@/components/findings-list'
 import { ReportExport } from '@/components/report-export'
+import { SettingsPanel } from '@/components/settings-panel'
 import { ScanConfig, ScanSession, ScanStatus, PHASE_DEFINITIONS } from '@/lib/scan-types'
 import { createScanSession, startScan, pauseScan, resumeScan, stopScan } from '@/lib/scan-engine'
 import { SecurityCalculator } from '@/components/security-calculator'
@@ -114,16 +115,16 @@ export default function Page() {
         )
 
       case 'passive':
-        return session ? <PassiveReconView session={session} /> : null
+        return <PassiveReconView session={session} />
 
       case 'active':
-        return session ? (
+        return (
           <ActiveScanView
             session={session}
             onSelectPhase={setSelectedPhase}
             selectedPhase={selectedPhase}
           />
-        ) : null
+        )
 
       case 'vulns':
         return <FindingsList findings={allFindings} />
@@ -132,12 +133,15 @@ export default function Page() {
         return <SecurityCalculator />
 
       case 'report':
-        return session ? (
+        return (
           <div className="space-y-6">
             <ReportPanel session={session} />
             <ReportExport session={session} />
           </div>
-        ) : null
+        )
+
+      case 'settings':
+        return <SettingsPanel />
 
       default:
         return null

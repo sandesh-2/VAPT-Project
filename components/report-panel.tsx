@@ -6,7 +6,7 @@ import { useState } from 'react'
 import { cn } from '@/lib/utils'
 
 interface ReportPanelProps {
-  session: ScanSession | null
+  session: ScanSession | null | undefined
 }
 
 function Section({ title, children }: { title: string; children: React.ReactNode }) {

@@ -12,10 +12,19 @@ import { FileDown, Copy, Check } from 'lucide-react'
 import { useState } from 'react'
 
 interface ReportExportProps {
-  session: ScanSession
+  session: ScanSession | null | undefined
 }
 
 export function ReportExport({ session }: ReportExportProps) {
+  if (!session) {
+    return (
+      <div className="bg-[#0f1117] border border-[#1e2535] rounded-xl p-10 flex flex-col items-center justify-center gap-3">
+        <FileDown className="w-10 h-10 text-[#1e2535]" />
+        <p className="text-sm text-[#334155] font-mono">No scan available for export</p>
+        <p className="text-xs text-[#334155]">Run a scan to export reports</p>
+      </div>
+    )
+  }
   const [copied, setCopied] = useState(false)
   const [downloading, setDownloading] = useState<string | null>(null)
 
