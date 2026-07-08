@@ -887,13 +887,13 @@ function ImpactMatrixCalculator() {
                         className={cn(
                           'w-full flex items-center gap-3 px-3 py-2 rounded-lg border text-left text-xs transition-all',
                           currentVal === level.value
-                            ? cn('border-opacity-50 text-white', group.bg, group.borderColor.replace('/30', '/60'))
+                            ? cn('border-opacity-50 text-white', group.bgColor, group.borderColor.replace('/30', '/60'))
                             : 'bg-[#161821] text-[#64748b] border-[#1e2535] hover:border-[#2a3347] hover:text-[#e2e8f0]',
                         )}
                       >
                         <span className={cn(
                           'w-5 h-5 rounded flex items-center justify-center text-[10px] font-bold font-mono flex-shrink-0',
-                          currentVal === level.value ? cn(group.color, group.bg) : 'text-[#334155] bg-[#1e2535]'
+                          currentVal === level.value ? cn(group.color, group.bgColor) : 'text-[#334155] bg-[#1e2535]'
                         )}>
                           {level.value}
                         </span>
