@@ -49,10 +49,10 @@ export function VulnScannerView({ session }: VulnScannerViewProps) {
     ...(phase5?.findings.filter(f => f.tags.includes('secret')) ?? []),
   ]
 
-  const critical = allVulnFindings.filter(f => f.severity === 'critical').length
-  const high     = allVulnFindings.filter(f => f.severity === 'high').length
-  const medium   = allVulnFindings.filter(f => f.severity === 'medium').length
-  const low      = allVulnFindings.filter(f => f.severity === 'low').length
+  const critical = allVulnFindings.filter(f => f.severity === 'CRITICAL').length
+  const high     = allVulnFindings.filter(f => f.severity === 'HIGH').length
+  const medium   = allVulnFindings.filter(f => f.severity === 'MEDIUM').length
+  const low      = allVulnFindings.filter(f => f.severity === 'LOW').length
   const total    = allVulnFindings.length
 
   const nucleiLogs = [...(phase12?.logs ?? []), ...(phase13?.logs ?? [])]
@@ -70,10 +70,10 @@ export function VulnScannerView({ session }: VulnScannerViewProps) {
             <span className="ml-auto text-sm font-bold font-mono text-white">{total} total</span>
           </div>
           <div className="space-y-3">
-            <SeverityBar label="Critical" count={critical} total={total} color={SEVERITY_COLORS.critical} />
-            <SeverityBar label="High"     count={high}     total={total} color={SEVERITY_COLORS.high}     />
-            <SeverityBar label="Medium"   count={medium}   total={total} color={SEVERITY_COLORS.medium}   />
-            <SeverityBar label="Low"      count={low}      total={total} color={SEVERITY_COLORS.low}      />
+            <SeverityBar label="Critical" count={critical} total={total} color={SEVERITY_COLORS.CRITICAL} />
+            <SeverityBar label="High"     count={high}     total={total} color={SEVERITY_COLORS.HIGH}     />
+            <SeverityBar label="Medium"   count={medium}   total={total} color={SEVERITY_COLORS.MEDIUM}   />
+            <SeverityBar label="Low"      count={low}      total={total} color={SEVERITY_COLORS.LOW}      />
           </div>
           {/* Tag cloud */}
           <div className="mt-5">

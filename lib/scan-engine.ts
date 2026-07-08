@@ -4,6 +4,7 @@ import { DETECTION_PATTERNS } from './detection-patterns'
 import { matchFindingToOWASP } from './owasp-mapping'
 
 let scanInterval: ReturnType<typeof setInterval> | null = null
+let currentPhaseIndex = 0
 
 // ── Utilities ───────────────────────────────────────────────────────────────
 
@@ -405,26 +406,23 @@ export async function createScanSession(config: ScanConfig): Promise<ScanSession
   }
 }
 
-export function startScan(session: ScanSession, callback: (updated: ScanSession) => void): void {
+export function startScan(session: ScanSession, callback: (updated: ScanSession) => void, startFromPhase = 0): void {
   if (scanInterval) clearInterval(scanInterval)
 
   session.status = 'running'
-  session.startedAt = ts()
-  let phaseIndex = 0
-
-  const phaseTimings = [4000, 6000, 5000, 8000, 5000, 3000, 10000, 4000, 3000, 2000, 2000, 15000, 3000, 2000, 1000]
+  if (startFromPhase === 0) session.startedAt = ts()
+  currentPhaseIndex = startFromPhase
 
   scanInterval = setInterval(() => {
-    if (phaseIndex >= session.phases.length) {
+    if (currentPhaseIndex >= session.phases.length) {
       session.status = 'completed'
       session.completedAt = ts()
       clearInterval(scanInterval!)
-      callback(session)
+      callback({ ...session })
       return
     }
 
-    const phase = session.phases[phaseIndex]
-    const isActive = session.config.mode === 'active' || session.config.mode === 'full'
+    const phase = session.phases[currentPhaseIndex]
     const shouldRun = !phase.status || phase.status === 'pending'
 
     if (shouldRun) {
@@ -433,18 +431,18 @@ export function startScan(session: ScanSession, callback: (updated: ScanSession)
 
     if (phase.status === 'running') {
       // Add logs
-      let logGen = () => []
-      if (phaseIndex === 0) logGen = () => genPassiveLogs(session.config.target)
-      else if (phaseIndex === 1) logGen = () => genDnsLogs()
-      else if (phaseIndex === 2) logGen = () => genHttpLogs()
-      else if (phaseIndex === 3) logGen = () => genCrawlLogs()
-      else if (phaseIndex === 4) logGen = () => genJsLogs()
-      else if (phaseIndex === 11) logGen = () => genNucleiLogs()
+      let logGen: () => LogEntry[] = () => []
+      if (currentPhaseIndex === 0) logGen = () => genPassiveLogs(session.config.target)
+      else if (currentPhaseIndex === 1) logGen = () => genDnsLogs()
+      else if (currentPhaseIndex === 2) logGen = () => genHttpLogs()
+      else if (currentPhaseIndex === 3) logGen = () => genCrawlLogs()
+      else if (currentPhaseIndex === 4) logGen = () => genJsLogs()
+      else if (currentPhaseIndex === 11) logGen = () => genNucleiLogs()
 
       phase.logs.push(...logGen())
 
       // Add findings
-      const newFindings = genPhaseFindings(phaseIndex + 1)
+      const newFindings = genPhaseFindings(currentPhaseIndex + 1)
       phase.findings.push(...newFindings)
       phase.count = phase.findings.length
 
@@ -457,18 +455,25 @@ export function startScan(session: ScanSession, callback: (updated: ScanSession)
         else session.summary.infoFindings++
       })
 
-      // Calculate risk score (simplified)
+      // Calculate risk score per CVSS weighted formula
       session.summary.riskScore = Math.min(
         100,
-        (session.summary.criticalFindings * 20 + session.summary.highFindings * 10 + session.summary.mediumFindings * 3) / 3,
+        Math.round(
+          (session.summary.criticalFindings * 10 +
+            session.summary.highFindings * 6 +
+            session.summary.mediumFindings * 3 +
+            session.summary.lowFindings * 1) /
+            Math.max(1, session.summary.criticalFindings + session.summary.highFindings + session.summary.mediumFindings + session.summary.lowFindings) *
+            10,
+        ),
       )
 
       phase.duration = randomInt(2000, 8000)
       phase.status = 'done'
-      phaseIndex++
+      currentPhaseIndex++
     }
 
-    callback(session)
+    callback({ ...session })
   }, 1500)
 }
 
@@ -478,7 +483,9 @@ export function pauseScan(): void {
 
 export function resumeScan(session: ScanSession, callback: (updated: ScanSession) => void): void {
   session.status = 'running'
-  startScan(session, callback)
+  // Find first non-completed phase to resume from
+  const resumeFrom = session.phases.findIndex(p => p.status === 'pending' || p.status === 'running')
+  startScan(session, callback, resumeFrom >= 0 ? resumeFrom : currentPhaseIndex)
 }
 
 export function stopScan(session: ScanSession): void {

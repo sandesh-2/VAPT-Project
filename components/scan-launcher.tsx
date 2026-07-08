@@ -33,7 +33,7 @@ const validators = {
       return false
     }
   },
-  researcher: (v: string): boolean => v && v.length > 0 && v.length <= 100,
+  researcher: (v: string): boolean => Boolean(v) && v.length > 0 && v.length <= 100,
 }
 
 export function ScanLauncher({ config, onConfigChange, status, onStart, onStop, onPause }: ScanLauncherProps) {

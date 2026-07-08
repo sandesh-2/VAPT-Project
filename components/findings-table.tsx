@@ -5,12 +5,20 @@ import { Finding, Severity, SEVERITY_BG } from '@/lib/scan-types'
 import { ChevronDown, ChevronUp, ExternalLink, Info, Shield, ShieldAlert } from 'lucide-react'
 import { cn } from '@/lib/utils'
 
+function safeHref(url: string | undefined): string {
+  if (!url) return '#'
+  try {
+    const p = new URL(url)
+    return p.protocol === 'http:' || p.protocol === 'https:' ? p.href : '#'
+  } catch { return '#' }
+}
+
 interface FindingsTableProps {
   findings: Finding[]
   title?: string
 }
 
-const SORDER: Severity[] = ['critical', 'high', 'medium', 'low', 'info']
+const SORDER: Severity[] = ['CRITICAL', 'HIGH', 'MEDIUM', 'LOW', 'INFO']
 
 function sortFindings(findings: Finding[]) {
   return [...findings].sort((a, b) => SORDER.indexOf(a.severity) - SORDER.indexOf(b.severity))
@@ -93,9 +101,9 @@ export function FindingsTable({ findings, title = 'Findings' }: FindingsTablePro
                 <p className="text-sm text-[#e2e8f0] font-medium leading-snug">{finding.title}</p>
                 <div className="flex items-center gap-2 mt-1 flex-wrap">
                   <span className="text-[10px] text-[#64748b] font-mono">{finding.phase}</span>
-                  {finding.cve && (
+                  {finding.cveId && (
                     <span className="text-[10px] font-mono bg-[#ff3b5c]/10 text-[#ff3b5c] border border-[#ff3b5c]/20 px-1.5 py-0.5 rounded">
-                      {finding.cve}
+                      {finding.cveId}
                     </span>
                   )}
                   {finding.tags.slice(0, 3).map(tag => (
@@ -127,7 +135,7 @@ export function FindingsTable({ findings, title = 'Findings' }: FindingsTablePro
                   {finding.url && (
                     <div>
                       <span className="text-[10px] text-[#64748b] font-mono uppercase tracking-widest block mb-1">URL</span>
-                      <a href={finding.url} target="_blank" rel="noopener noreferrer"
+                      <a href={safeHref(finding.url)} target="_blank" rel="noopener noreferrer"
                         className="flex items-center gap-1.5 text-[11px] text-[#00d4aa] font-mono hover:underline">
                         {finding.url}
                         <ExternalLink className="w-3 h-3" />
@@ -135,10 +143,12 @@ export function FindingsTable({ findings, title = 'Findings' }: FindingsTablePro
                     </div>
                   )}
                   {/* Remediation */}
-                  {finding.remediation && (
+                  {finding.remediationSteps && finding.remediationSteps.length > 0 && (
                     <div className="bg-[#45d48a]/5 border border-[#45d48a]/20 rounded-lg p-3">
                       <span className="text-[10px] text-[#45d48a] font-mono uppercase tracking-widest block mb-1.5">Remediation</span>
-                      <p className="text-xs text-[#c8d3e0] leading-relaxed">{finding.remediation}</p>
+                      {finding.remediationSteps.map((step, idx) => (
+                        <p key={idx} className="text-xs text-[#c8d3e0] leading-relaxed">{idx + 1}. {step}</p>
+                      ))}
                     </div>
                   )}
                   {/* Timestamp */}

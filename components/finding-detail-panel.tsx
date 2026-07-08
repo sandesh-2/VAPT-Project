@@ -12,6 +12,18 @@ interface FindingDetailPanelProps {
   onClose: () => void
 }
 
+/** Allow only http/https hrefs to prevent javascript: XSS */
+function safeHref(url: string | undefined): string {
+  if (!url) return '#'
+  try {
+    const parsed = new URL(url)
+    if (parsed.protocol !== 'http:' && parsed.protocol !== 'https:') return '#'
+    return parsed.href
+  } catch {
+    return '#'
+  }
+}
+
 export function FindingDetailPanel({ finding, isOpen, onClose }: FindingDetailPanelProps) {
   const [copied, setCopied] = useState(false)
 
@@ -67,7 +79,7 @@ export function FindingDetailPanel({ finding, isOpen, onClose }: FindingDetailPa
                 <div className="flex items-center gap-2 font-mono text-sm bg-muted/30 rounded-lg p-3 border border-border">
                   <span className="flex-1 truncate">{finding.url}</span>
                   <a
-                    href={finding.url}
+                    href={safeHref(finding.url)}
                     target="_blank"
                     rel="noopener noreferrer"
                     className="shrink-0 p-2 hover:bg-muted rounded transition"
@@ -235,7 +247,7 @@ export function FindingDetailPanel({ finding, isOpen, onClose }: FindingDetailPa
                   {finding.references.map((ref, idx) => (
                     <a
                       key={idx}
-                      href={ref}
+                      href={safeHref(ref)}
                       target="_blank"
                       rel="noopener noreferrer"
                       className="flex items-center gap-2 text-xs text-blue-400 hover:text-blue-300 truncate"

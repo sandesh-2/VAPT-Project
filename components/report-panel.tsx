@@ -207,8 +207,8 @@ ${high.map(f => `- **${f.title}**: ${f.description}`).join('\n')}
             {allFindings.map(f => (
               <div key={f.id} className={cn(
                 "flex items-start gap-3 p-3 rounded-lg border",
-                f.severity === 'critical' ? "bg-[#ff3b5c]/5 border-[#ff3b5c]/15" :
-                f.severity === 'high'     ? "bg-[#ff6b35]/5 border-[#ff6b35]/15" :
+                f.severity === 'CRITICAL' ? "bg-[#ff3b5c]/5 border-[#ff3b5c]/15" :
+                f.severity === 'HIGH'     ? "bg-[#ff6b35]/5 border-[#ff6b35]/15" :
                 "bg-[#0a0b0f] border-[#1e2535]"
               )}>
                 <span className={cn("px-2 py-0.5 text-[9px] font-mono rounded border uppercase flex-shrink-0 mt-0.5", SEVERITY_BG[f.severity as Severity])}>
@@ -218,9 +218,9 @@ ${high.map(f => `- **${f.title}**: ${f.description}`).join('\n')}
                   <p className="text-sm text-[#e2e8f0] font-medium">{f.title}</p>
                   <p className="text-xs text-[#64748b] mt-0.5 line-clamp-2">{f.description}</p>
                 </div>
-                {f.cve && (
+                {f.cveId && (
                   <span className="text-[9px] font-mono bg-[#ff3b5c]/10 text-[#ff3b5c] border border-[#ff3b5c]/20 px-1.5 py-0.5 rounded flex-shrink-0">
-                    {f.cve}
+                    {f.cveId}
                   </span>
                 )}
               </div>

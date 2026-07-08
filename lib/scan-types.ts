@@ -134,17 +134,17 @@ export const PHASE_DEFINITIONS = [
 ] as const
 
 export const SEVERITY_COLORS: Record<Severity, string> = {
-  critical: '#ff3b5c',
-  high:     '#ff6b35',
-  medium:   '#f7b731',
-  low:      '#45d48a',
-  info:     '#4ecdc4',
+  CRITICAL: '#ff3b5c',
+  HIGH:     '#ff6b35',
+  MEDIUM:   '#f7b731',
+  LOW:      '#45d48a',
+  INFO:     '#4ecdc4',
 }
 
 export const SEVERITY_BG: Record<Severity, string> = {
-  critical: 'bg-[#ff3b5c]/10 text-[#ff3b5c] border-[#ff3b5c]/20',
-  high:     'bg-[#ff6b35]/10 text-[#ff6b35] border-[#ff6b35]/20',
-  medium:   'bg-[#f7b731]/10 text-[#f7b731] border-[#f7b731]/20',
-  low:      'bg-[#45d48a]/10 text-[#45d48a] border-[#45d48a]/20',
-  info:     'bg-[#4ecdc4]/10 text-[#4ecdc4] border-[#4ecdc4]/20',
+  CRITICAL: 'bg-[#ff3b5c]/10 text-[#ff3b5c] border-[#ff3b5c]/20',
+  HIGH:     'bg-[#ff6b35]/10 text-[#ff6b35] border-[#ff6b35]/20',
+  MEDIUM:   'bg-[#f7b731]/10 text-[#f7b731] border-[#f7b731]/20',
+  LOW:      'bg-[#45d48a]/10 text-[#45d48a] border-[#45d48a]/20',
+  INFO:     'bg-[#4ecdc4]/10 text-[#4ecdc4] border-[#4ecdc4]/20',
 }

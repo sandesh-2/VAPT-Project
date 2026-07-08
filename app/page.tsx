@@ -1,18 +1,17 @@
 'use client'
 
-import { useState, useCallback, useRef, useEffect } from 'react'
+import { useState, useCallback } from 'react'
 import { Sidebar } from '@/components/sidebar'
 import { ScanLauncher } from '@/components/scan-launcher'
 import { DashboardView } from '@/components/dashboard-view'
 import { PassiveReconView } from '@/components/passive-recon-view'
 import { ActiveScanView } from '@/components/active-scan-view'
-import { VulnScannerView } from '@/components/vuln-scanner-view'
 import { ReportPanel } from '@/components/report-panel'
 import { FindingsList } from '@/components/findings-list'
 import { ReportExport } from '@/components/report-export'
 import { ScanConfig, ScanSession, ScanStatus, PHASE_DEFINITIONS } from '@/lib/scan-types'
 import { createScanSession, startScan, pauseScan, resumeScan, stopScan } from '@/lib/scan-engine'
-import { ChevronRight } from 'lucide-react'
+import { SecurityCalculator } from '@/components/security-calculator'
 
 const DEFAULT_CONFIG: ScanConfig = {
   target: '',
@@ -30,7 +29,7 @@ export default function Page() {
   const [config, setConfig] = useState<ScanConfig>(DEFAULT_CONFIG)
   const [session, setSession] = useState<ScanSession | null>(null)
   const [status, setStatus] = useState<ScanStatus>('idle')
-  const scanUpdateRef = useRef<NodeJS.Timeout | null>(null)
+  const [selectedPhase, setSelectedPhase] = useState<number | undefined>(undefined)
 
   const scanProgress = session
     ? Math.round((session.phases.filter(p => p.status === 'done').length / session.phases.length) * 100)
@@ -94,12 +93,12 @@ export default function Page() {
   const renderContent = () => {
     switch (activeTab) {
       case 'dashboard':
-        return session ? (
-          <DashboardView session={session} progress={scanProgress} />
-        ) : (
-          <div className="text-center py-12">
-            <p className="text-muted-foreground">No active scan</p>
-          </div>
+        return (
+          <DashboardView
+            session={session}
+            onSelectPhase={setSelectedPhase}
+            selectedPhase={selectedPhase}
+          />
         )
 
       case 'scanner':
@@ -118,10 +117,19 @@ export default function Page() {
         return session ? <PassiveReconView session={session} /> : null
 
       case 'active':
-        return session ? <ActiveScanView session={session} /> : null
+        return session ? (
+          <ActiveScanView
+            session={session}
+            onSelectPhase={setSelectedPhase}
+            selectedPhase={selectedPhase}
+          />
+        ) : null
 
       case 'vulns':
         return <FindingsList findings={allFindings} />
+
+      case 'calculator':
+        return <SecurityCalculator />
 
       case 'report':
         return session ? (
@@ -139,7 +147,12 @@ export default function Page() {
   return (
     <div className="flex h-screen bg-background">
       {/* Sidebar */}
-      <Sidebar activeTab={activeTab} onTabChange={setActiveTab} scanProgress={scanProgress} />
+      <Sidebar
+        activeTab={activeTab}
+        onTabChange={setActiveTab}
+        isScanning={status === 'running'}
+        scanProgress={scanProgress}
+      />
 
       {/* Main Content */}
       <main className="flex-1 overflow-y-auto">
@@ -178,15 +191,15 @@ export default function Page() {
               </div>
               <div className="bg-card border border-border rounded-lg p-4">
                 <div className="text-xs text-muted-foreground uppercase mb-1">Critical</div>
-                <div className="text-2xl font-bold text-red-400">{session.summary.criticalFindings}</div>
+                <div className="text-2xl font-bold text-red-400">{session.summary.criticalFindings ?? 0}</div>
               </div>
               <div className="bg-card border border-border rounded-lg p-4">
                 <div className="text-xs text-muted-foreground uppercase mb-1">High</div>
-                <div className="text-2xl font-bold text-orange-400">{session.summary.highFindings}</div>
+                <div className="text-2xl font-bold text-orange-400">{session.summary.highFindings ?? 0}</div>
               </div>
               <div className="bg-card border border-border rounded-lg p-4">
                 <div className="text-xs text-muted-foreground uppercase mb-1">Risk Score</div>
-                <div className="text-2xl font-bold text-primary">{Math.min(100, session.summary.riskScore)}</div>
+                <div className="text-2xl font-bold text-primary">{Math.min(100, session.summary.riskScore ?? 0)}</div>
               </div>
             </div>
           )}

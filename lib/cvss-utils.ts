@@ -26,12 +26,13 @@ const SEVERITY_RATINGS = {
 };
 
 // Metric Score Lookups for CVSS v3.1
+// PR values differ when Scope = Changed (per FIRST specification)
 const METRICS = {
   AV: { N: 0.85, A: 0.62, L: 0.55, P: 0.2 }, // Attack Vector
   AC: { L: 0.77, H: 0.44 }, // Attack Complexity
-  PR: { N: 0.85, L: 0.62, H: 0.27 }, // Privileges Required
+  PR: { N: 0.85, L: 0.62, H: 0.27 }, // Privileges Required (Scope Unchanged)
+  PR_CHANGED: { N: 0.85, L: 0.50, H: 0.50 }, // Privileges Required (Scope Changed)
   UI: { N: 0.85, R: 0.62 }, // User Interaction
-  S: { U: 1, C: 1 }, // Scope
   C: { N: 0, L: 0.22, H: 0.56 }, // Confidentiality
   I: { N: 0, L: 0.22, H: 0.56 }, // Integrity
   A: { N: 0, L: 0.22, H: 0.56 }, // Availability
@@ -65,32 +66,41 @@ export function calculateCVSSBaseScore(vectorString: string): number {
     });
 
     // Extract metrics with defaults for required ones
-    const AV = METRICS.AV[metrics.AV as keyof typeof METRICS.AV] || 0.85;
-    const AC = METRICS.AC[metrics.AC as keyof typeof METRICS.AC] || 0.77;
-    const PR = METRICS.PR[metrics.PR as keyof typeof METRICS.PR] || 0.85;
-    const UI = METRICS.UI[metrics.UI as keyof typeof METRICS.UI] || 0.85;
-    const S = metrics.S === 'C' ? 1 : 1; // Scope (always 1 for base calculation in v3.1)
-    const C = METRICS.C[metrics.C as keyof typeof METRICS.C] || 0;
-    const I = METRICS.I[metrics.I as keyof typeof METRICS.I] || 0;
-    const A = METRICS.A[metrics.A as keyof typeof METRICS.A] || 0;
+    const scopeChanged = metrics.S === 'C';
+    const AV = METRICS.AV[metrics.AV as keyof typeof METRICS.AV] ?? 0.85;
+    const AC = METRICS.AC[metrics.AC as keyof typeof METRICS.AC] ?? 0.77;
+    // PR score depends on Scope per CVSS v3.1 specification
+    const PR = scopeChanged
+      ? (METRICS.PR_CHANGED[metrics.PR as keyof typeof METRICS.PR_CHANGED] ?? 0.85)
+      : (METRICS.PR[metrics.PR as keyof typeof METRICS.PR] ?? 0.85);
+    const UI = METRICS.UI[metrics.UI as keyof typeof METRICS.UI] ?? 0.85;
+    const C = METRICS.C[metrics.C as keyof typeof METRICS.C] ?? 0;
+    const I = METRICS.I[metrics.I as keyof typeof METRICS.I] ?? 0;
+    const A = METRICS.A[metrics.A as keyof typeof METRICS.A] ?? 0;
 
-    // Calculate Impact SubScore
-    const impactSubscore = 1 - (1 - C) * (1 - I) * (1 - A);
+    // ISCBase = 1 - [(1-ImpactConf) × (1-ImpactInteg) × (1-ImpactAvail)]
+    const iscBase = 1 - (1 - C) * (1 - I) * (1 - A);
 
-    // Calculate Exploitability
+    // Impact SubScore (ISS) differs by Scope
+    const impactSubscore = scopeChanged
+      ? 7.52 * (iscBase - 0.029) - 3.25 * Math.pow(iscBase - 0.02, 15)
+      : 6.42 * iscBase;
+
+    // Exploitability Sub Score (ESS)
     const exploitability = 8.22 * AV * AC * PR * UI;
 
-    // Calculate Base Score
+    // Base Score
     let baseScore: number;
     if (impactSubscore <= 0) {
       baseScore = 0;
-    } else if (S === 1) {
+    } else if (!scopeChanged) {
       baseScore = Math.min(impactSubscore + exploitability, 10);
     } else {
       baseScore = Math.min(1.08 * (impactSubscore + exploitability), 10);
     }
 
-    return Math.round(baseScore * 10) / 10; // Round to 1 decimal
+    // Round up to nearest 0.1 per CVSS spec (roundup function)
+    return Math.ceil(baseScore * 10) / 10;
   } catch (error) {
     console.error('[CVSS] Invalid vector string:', vectorString, error);
     return 0;

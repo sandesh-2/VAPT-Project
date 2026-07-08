@@ -8,8 +8,10 @@ const jetbrainsMono = JetBrains_Mono({ subsets: ['latin'], variable: '--font-jet
 
 export const metadata: Metadata = {
   title: 'ReconForge — Bug Bounty & VAPT Platform',
-  description: 'Automated Bug Bounty and VAPT platform with 15-phase active/passive scanning pipeline, vulnerability triage, and full reporting.',
-  keywords: ['bug bounty', 'VAPT', 'penetration testing', 'recon', 'vulnerability scanner', 'security'],
+  description:
+    'Automated Bug Bounty and VAPT platform with 15-phase active/passive scanning pipeline, CVSS v3.1 calculator, Impact Matrix scoring, vulnerability triage, and full reporting.',
+  keywords: ['bug bounty', 'VAPT', 'penetration testing', 'recon', 'vulnerability scanner', 'security', 'CVSS', 'impact matrix'],
+  robots: { index: false, follow: false }, // Do not index — security tooling
 }
 
 export const viewport: Viewport = {
